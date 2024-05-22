@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -26,24 +25,37 @@ public class Principal {
                     borrarEmpleadoPorDNI(scanner);
                     break;
                 case 4:
+                    Empleado mejorEmpleado = max();
+                    if (mejorEmpleado != null) {
+                        System.out.println("El empleado con la mayor media de parámetros es: " + mejorEmpleado.getNombre() +
+                                ", DNI: " + mejorEmpleado.getDni() +
+                                ", Número de Empleado: " + mejorEmpleado.getNumeroEmpleado() +
+                                ", Media de Evaluaciones: " + mejorEmpleado.getPortfolio().media());
+                    } else {
+                        System.out.println("No hay empleados registrados.");
+                    }
+                    break;
+                case 5:
                     System.out.println("Saliendo del sistema...");
                     break;
                 default:
-                    System.out.println("Opcion no existente. Por favor, intentelo de nuevo.");
+                    System.out.println("Opción no válida. Por favor, inténtelo de nuevo.");
             }
-        } while (opcion != 4);
+        } while (opcion != 5);
 
         scanner.close();
     }
 
     private static void mostrarMenu() {
-        System.out.println("\nMenu de opciones:");
+        System.out.println("\nMenú de Opciones:");
         System.out.println("1. Crear empleado");
-        System.out.println("2. Lista empleado");
+        System.out.println("2. Listar empleados");
         System.out.println("3. Borrar empleado por DNI");
-        System.out.println("4. Salir");
-        System.out.println("Seleccione una opcion");
+        System.out.println("4. Mostrar empleado con la mayor media de parámetros");
+        System.out.println("5. Salir");
+        System.out.print("Seleccione una opción: ");
     }
+
     private static void crearEmpleado(Scanner scanner) {
         System.out.print("Ingrese el nombre del empleado: ");
         String nombre = scanner.nextLine();
@@ -51,7 +63,7 @@ public class Principal {
         String dni = scanner.nextLine();
         System.out.print("Ingrese el número de empleado: ");
         int numeroEmpleado = scanner.nextInt();
-        scanner.nextLine(); 
+        scanner.nextLine();  
 
         System.out.print("Ingrese la complejidad de los trabajos terminados (0-1): ");
         double complejidadTrabajos = scanner.nextDouble();
@@ -61,7 +73,7 @@ public class Principal {
         double proactividad = scanner.nextDouble();
         System.out.print("Ingrese el compañerismo (0-1): ");
         double companerismo = scanner.nextDouble();
-        scanner.nextLine(); 
+        scanner.nextLine();  
 
         Portfolio portfolio = new Portfolio(complejidadTrabajos, calidadTrabajos, proactividad, companerismo);
         Empleado empleado = new Empleado(nombre, dni, numeroEmpleado, portfolio);
@@ -86,22 +98,26 @@ public class Principal {
     private static void borrarEmpleadoPorDNI(Scanner scanner) {
         System.out.print("Ingrese el DNI del empleado a borrar: ");
         String dni = scanner.nextLine();
-        Iterator<Empleado> iterator = empleados.iterator();
-        boolean encontrado = false;
+        boolean encontrado = empleados.removeIf(empleado -> empleado.getDni().equals(dni));
 
-        while (iterator.hasNext()) {
-            Empleado empleado = iterator.next();
-            if (empleado.getDni().equals(dni)) {
-                iterator.remove();
-                encontrado = true;
-                System.out.println("Empleado con DNI " + dni + " ha sido borrado.");
-                break;
-            }
-        }
-
-        if (!encontrado) {
+        if (encontrado) {
+            System.out.println("Empleado con DNI " + dni + " ha sido borrado.");
+        } else {
             System.out.println("No se encontró un empleado con el DNI " + dni);
         }
     }
+
+    private static Empleado max() {
+        if (empleados.isEmpty()) {
+            return null;
+        }
+
+        Empleado mejorEmpleado = empleados.get(0);
+        for (Empleado empleado : empleados) {
+            if (empleado.getPortfolio().media() > mejorEmpleado.getPortfolio().media()) {
+                mejorEmpleado = empleado;
+            }
+        }
+        return mejorEmpleado;
+    }
 }
- 
